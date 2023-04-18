@@ -1,7 +1,6 @@
 package com.bill.remind.controller;
 
 import com.bill.remind.entity.Category;
-import com.bill.remind.entity.Member;
 import com.bill.remind.service.CategoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -21,7 +20,7 @@ public class CategoryController {
     }
 
     @PostMapping("/create")
-    public Category createCategory(@RequestBody Category category){
+    public Category createCategory(@RequestBody(required = false) Category category){
         return categoryService.createCategory(category);
     }
 

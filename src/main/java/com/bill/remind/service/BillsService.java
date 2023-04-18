@@ -1,5 +1,9 @@
 package com.bill.remind.service;
 
+import com.bill.remind.controller.exception.BillIsNullException;
+import com.bill.remind.controller.exception.BillNotFoundException;
+import com.bill.remind.controller.exception.CategoryNotFoundException;
+import com.bill.remind.controller.exception.MemberNotFoundException;
 import com.bill.remind.entity.Bill;
 import com.bill.remind.entity.Category;
 import com.bill.remind.entity.Member;
@@ -25,7 +29,7 @@ public class BillsService {
     CategoryRepository categoryRepository;
 
     public List<Bill> getBills() {
-        return billsRepository.isDeletedFalse().orElseThrow(() -> new IllegalStateException("message"));
+        return billsRepository.isDeletedFalse().orElse(new ArrayList<>());
     }
 
     public List<Bill> createNewBills(List<Bill> bills) {
@@ -36,12 +40,12 @@ public class BillsService {
         if (bill != null)
             return billsRepository.save(bill);
         else
-            throw new IllegalStateException("Bill could be saved");
+            throw new BillIsNullException();
     }
 
     public Bill deleteBill(Long billId) {
         Bill bill = billsRepository.findById(billId)
-                .orElseThrow(() -> new IllegalStateException("Bill with Id " + billId + "does not exist."));
+                .orElseThrow(BillNotFoundException::new);
          bill.setDeleted(true);
          return billsRepository.save(bill);
     }
@@ -51,7 +55,7 @@ public class BillsService {
     }
 
     public Bill updateBill(Long billId, BillDTO billDto) {
-        Bill bill = billsRepository.findById(billId).orElseThrow(() -> new IllegalStateException("Bill with Id " + billId + "does not exist."));
+        Bill bill = billsRepository.findById(billId).orElseThrow(BillNotFoundException::new);
 
         JsonNullableUtils.changeIfPresent(billDto.getName(), bill::setName);
         JsonNullableUtils.changeIfPresent(billDto.getAmount(), bill::setAmount);
@@ -63,18 +67,16 @@ public class BillsService {
     }
 
     public Bill assignBillToMember(Long billId, Long memberId) {
-        //TODO add exception logic
-        Bill bill = billsRepository.findById(billId).get();
-        Member member = membersRepository.findById(memberId).get();
+        Bill bill = billsRepository.findById(billId).orElseThrow(BillNotFoundException::new);
+        Member member = membersRepository.findById(memberId).orElseThrow(MemberNotFoundException::new);
         bill.assignMember(member);
 
         return billsRepository.save(bill);
     }
 
     public Bill assignBillToCategory(Long billId, Long categoryId) {
-        //TODO add exception logic
-        Bill bill = billsRepository.findById(billId).get();
-        Category category = categoryRepository.findById(categoryId).get();
+        Bill bill = billsRepository.findById(billId).orElseThrow(BillNotFoundException::new);
+        Category category = categoryRepository.findById(categoryId).orElseThrow(CategoryNotFoundException::new);
         bill.assignCategory(category);
 
         return billsRepository.save(bill);

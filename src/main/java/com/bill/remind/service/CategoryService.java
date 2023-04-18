@@ -1,5 +1,6 @@
 package com.bill.remind.service;
 
+import com.bill.remind.controller.exception.CategoryIsNullException;
 import com.bill.remind.entity.Category;
 import com.bill.remind.repository.CategoryRepository;
 import lombok.RequiredArgsConstructor;
@@ -15,6 +16,6 @@ public class CategoryService {
         if (category != null)
             return categoryRepository.save(category);
         else
-            throw new IllegalStateException("");
+            throw new CategoryIsNullException();
     }
 }

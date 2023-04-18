@@ -20,7 +20,7 @@ public class BillsController {
     }
 
     @PostMapping("/createBill")
-    public Bill createBill(@RequestBody Bill bill){
+    public Bill createBill(@RequestBody(required = false) Bill bill){
         return billsService.createBill(bill);
     }
 
